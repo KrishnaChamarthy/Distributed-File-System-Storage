@@ -1,9 +1,19 @@
 # Test files and data directories
 testFiles/
 data/
+chunks/
+*.chunk
+Phase\ 1/testFiles/
+Phase\ 1/data/
+Phase\ 1/chunks/
 
 # Compiled executables
 file_handler
+main
+test_*
+Phase\ 1/file_handler
+Phase\ 1/main
+Phase\ 1/test_*
 *.exe
 *.out
 *.app
@@ -16,6 +26,8 @@ file_handler
 *.dylib
 *.a
 *.lib
+Phase\ 1/*.o
+Phase\ 1/*.obj
 
 # Debug files
 *.dSYM/
@@ -66,3 +78,15 @@ core
 *.bak
 *.backup
 *~
+
+# Reconstructed files (from your distributed file system)
+*_reconstructed*
+Phase\ 1/*_reconstructed*
+
+# Hash and metadata files
+*.hash
+*.meta
+*.index
+Phase\ 1/*.hash
+Phase\ 1/*.meta
+Phase\ 1/*.index
