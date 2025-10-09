@@ -3,17 +3,19 @@ testFiles/
 data/
 chunks/
 *.chunk
-Phase\ 1/testFiles/
-Phase\ 1/data/
-Phase\ 1/chunks/
+Phase1/testFiles/
+Phase1/data/
+Phase1/chunks/
+Phase2/uploads/
+Phase2/downloads/
 
 # Compiled executables
 file_handler
 main
 test_*
-Phase\ 1/file_handler
-Phase\ 1/main
-Phase\ 1/test_*
+Phase1/file_handler
+Phase1/main
+Phase1/test_*
 *.exe
 *.out
 *.app
@@ -26,8 +28,8 @@ Phase\ 1/test_*
 *.dylib
 *.a
 *.lib
-Phase\ 1/*.o
-Phase\ 1/*.obj
+Phase1/*.o
+Phase1/*.obj
 
 # Debug files
 *.dSYM/
@@ -81,12 +83,20 @@ core
 
 # Reconstructed files (from your distributed file system)
 *_reconstructed*
-Phase\ 1/*_reconstructed*
+Phase1/*_reconstructed*
 
 # Hash and metadata files
 *.hash
 *.meta
 *.index
-Phase\ 1/*.hash
-Phase\ 1/*.meta
-Phase\ 1/*.index
+Phase1/*.hash
+Phase1/*.meta
+Phase1/*.index
+
+# Generated protobuf and gRPC files
+*.pb.h
+*.pb.cc
+*.grpc.pb.h
+*.grpc.pb.cc
+Phase2/Proto/*.pb.h
+Phase2/Proto/*.pb.cc
