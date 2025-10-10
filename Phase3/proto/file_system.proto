@@ -1,0 +1,81 @@
+syntax = "proto3";
+
+package filesystem;
+
+import "google/protobuf/timestamp.proto";
+
+service MasterService {
+  rpc GetFileInfo(FileInfoRequest) returns (FileInfoResponse) {}
+  rpc AllocateChunk(AllocateChunkRequest) returns (AllocateChunkResponse) {}
+  rpc GetChunkLocations(ChunkLocationRequest) returns (ChunkLocationResponse) {}
+  rpc Heartbeat(HeartbeatRequest) returns (HeartbeatResponse) {}
+}
+
+message FileInfoRequest {
+  string filename = 1;
+}
+
+message FileInfoResponse {
+  repeated string chunk_ids = 1;
+}
+
+message AllocateChunkRequest {
+  string filename = 1;
+  string chunk_id = 2;
+}
+
+message AllocateChunkResponse {
+  repeated string chunk_server_addresses = 1;
+}
+
+message ChunkLocationRequest {
+  string chunk_id = 1;
+}
+
+message ChunkLocationResponse {
+  repeated string chunk_server_addresses = 1;
+}
+
+message HeartbeatRequest {
+  string server_address = 1;
+}
+
+message HeartbeatResponse {
+}
+
+service ChunkService {
+  rpc UploadChunk(UploadChunkRequest) returns (UploadChunkResponse) {}
+  rpc DownloadChunk(DownloadChunkRequest) returns (DownloadChunkResponse) {}
+}
+
+message UploadChunkRequest {
+  string chunk_id = 1;
+  bytes data = 2;
+}
+
+message UploadChunkResponse {
+  bool success = 1;
+}
+
+message DownloadChunkRequest {
+  string chunk_id = 1;
+}
+
+message DownloadChunkResponse {
+  bytes data = 1;
+}
+
+message FileMetadata {
+  string filename = 1;
+  repeated string chunk_ids = 2;
+}
+
+message ChunkMetadata {
+  string chunk_id = 1;
+  repeated string server_addresses = 2;
+}
+
+message MasterMetadata {
+  repeated FileMetadata files = 1;
+  repeated ChunkMetadata chunks = 2;
+}
