@@ -56,6 +56,7 @@ Phase4/
 ## 📖 Documentation
 
 - **[CLI User Guide](CLI_USER_GUIDE.md)** - Complete CLI usage guide
+- **[Web Usage Guide](WEB_USAGE_GUIDE.md)** - Web dashboard and API guide
 - **[Testing Guide](TESTING_GUIDE.md)** - Testing instructions and examples
 - **[Quick Start](QUICKSTART.md)** - Get started in 5 minutes
 - **[Implementation Status](IMPLEMENTATION_STATUS.md)** - Feature coverage
@@ -103,6 +104,9 @@ make
 # Start web server (in full build)
 ./web_server
 # Access: http://localhost:8080
+
+# Or try the web demo
+./web_demo.sh
 ```
 
 ### Docker Deployment
@@ -110,36 +114,3 @@ make
 docker-compose up --build
 docker-compose up --scale chunkserver=5
 ```
-
-## 🧪 Testing
-
-```bash
-# Quick test
-./final_demo.sh
-
-# Verify downloads
-ls -la downloads/
-diff demo_files/test1.txt downloads/test1.txt
-
-# Run test suite (if available)
-cd tests/ && ./run_tests.sh
-```
-
-## 🎉 Success! 
-
-Your DFS is working when you see:
-- ✅ Files uploading with replication messages
-- ✅ Files listed with `ls` command
-- ✅ Files downloading to `downloads/` folder
-- ✅ File integrity verification passes
-
-## 📞 Need Help?
-
-- Run `./dfs_cli help` for command reference
-- Check `CLI_USER_GUIDE.md` for detailed instructions
-- Use `./demo_cli.sh` for guided demonstration
-- See main `../README.md` for complete project overview
-
----
-
-**🚀 Ready to explore distributed file systems? Start with `./final_demo.sh`!**

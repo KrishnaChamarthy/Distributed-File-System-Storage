@@ -246,7 +246,8 @@ Phase4/
 ### 5. Web Dashboard
 ```bash
 # Start web server (in full implementation)
-./web_server
+cd Phase4/
+./dfs_web_abs
 # Access: http://localhost:8080
 ```
 
@@ -256,6 +257,22 @@ Phase4/
 - 🖥️ Server status monitoring
 - 📁 File management interface
 - ⚡ Performance statistics
+
+## 🖥️ Web UI Screenshots
+
+### Dashboard Overview
+![Dashboard](Phase4/screenshots/dashboard.png)
+*Main dashboard showing system overview with file counts, storage usage, and server status*
+
+### File Management Interface
+![File Browser](Phase4/screenshots/files.png)
+*File browser displaying all uploaded files with sizes and management options*
+
+### Server Monitoring
+![Server Status](Phase4/screenshots/servers.png)
+*Real-time monitoring of chunk servers with health status, disk usage, and response times*
+
+> **Note:** The web interface automatically refreshes every 30 seconds and shows real-time data synchronized with CLI operations.
 
 ## 🐳 Docker Deployment
 

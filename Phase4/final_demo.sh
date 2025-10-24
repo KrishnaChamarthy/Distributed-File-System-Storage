@@ -79,7 +79,13 @@ echo "💾 Current DFS data directory:"
 ls -la data/ 2>/dev/null | head -10
 
 echo ""
-echo "🎉 Demo completed successfully!"
+echo "� Web Interface Available:"
+echo "   ./web_demo.sh                       # Web dashboard demo"
+echo "   cat WEB_USAGE_GUIDE.md              # Complete web guide"
+echo "   http://localhost:8080 (full build)  # Live web dashboard"
+
+echo ""
+echo "�🎉 Demo completed successfully!"
 echo ""
 echo "📖 Usage Summary:"
 echo "=================="
