@@ -1,0 +1,253 @@
+syntax = "proto3";
+
+package dfs;
+
+// File metadata service (Master-Client communication)
+service FileService {
+    // File operations
+    rpc CreateFile(CreateFileRequest) returns (CreateFileResponse);
+    rpc DeleteFile(DeleteFileRequest) returns (DeleteFileResponse);
+    rpc ListFiles(ListFilesRequest) returns (ListFilesResponse);
+    rpc GetFileInfo(GetFileInfoRequest) returns (GetFileInfoResponse);
+    
+    // Chunk operations
+    rpc AllocateChunks(AllocateChunksRequest) returns (AllocateChunksResponse);
+    rpc GetChunkLocations(GetChunkLocationsRequest) returns (GetChunkLocationsResponse);
+    rpc CompleteUpload(CompleteUploadRequest) returns (CompleteUploadResponse);
+}
+
+// Chunk management service (Master-ChunkServer communication)
+service ChunkManagement {
+    // Heartbeat and registration
+    rpc RegisterChunkServer(RegisterChunkServerRequest) returns (RegisterChunkServerResponse);
+    rpc SendHeartbeat(HeartbeatRequest) returns (HeartbeatResponse);
+    
+    // Replication commands
+    rpc ReplicateChunk(ReplicateChunkRequest) returns (ReplicateChunkResponse);
+    rpc DeleteChunk(DeleteChunkRequest) returns (DeleteChunkResponse);
+    
+    // Status reporting
+    rpc ReportChunkCorruption(ChunkCorruptionRequest) returns (ChunkCorruptionResponse);
+}
+
+// Chunk storage service (Client-ChunkServer communication)
+service ChunkStorage {
+    // Data operations
+    rpc WriteChunk(WriteChunkRequest) returns (WriteChunkResponse);
+    rpc ReadChunk(ReadChunkRequest) returns (ReadChunkResponse);
+    rpc CheckChunkIntegrity(CheckIntegrityRequest) returns (CheckIntegrityResponse);
+    
+    // Replication operations
+    rpc CopyChunk(CopyChunkRequest) returns (CopyChunkResponse);
+}
+
+// Message definitions
+message ChunkInfo {
+    string chunk_id = 1;
+    repeated string server_addresses = 2;
+    int64 size = 3;
+    string checksum = 4;
+    bool is_erasure_coded = 5;
+}
+
+message FileInfo {
+    string filename = 1;
+    int64 size = 2;
+    int64 created_time = 3;
+    int64 modified_time = 4;
+    repeated ChunkInfo chunks = 5;
+    bool is_encrypted = 6;
+    string encryption_key_id = 7;
+}
+
+message ServerInfo {
+    string server_id = 1;
+    string address = 2;
+    int32 port = 3;
+    int64 free_space = 4;
+    int32 chunk_count = 5;
+    double cpu_usage = 6;
+    double memory_usage = 7;
+    bool is_healthy = 8;
+}
+
+// File service messages
+message CreateFileRequest {
+    string filename = 1;
+    int64 file_size = 2;
+    bool enable_encryption = 3;
+    bool enable_erasure_coding = 4;
+}
+
+message CreateFileResponse {
+    bool success = 1;
+    string message = 2;
+    string file_id = 3;
+}
+
+message DeleteFileRequest {
+    string filename = 1;
+}
+
+message DeleteFileResponse {
+    bool success = 1;
+    string message = 2;
+}
+
+message ListFilesRequest {
+    string path_prefix = 1;
+}
+
+message ListFilesResponse {
+    repeated FileInfo files = 1;
+}
+
+message GetFileInfoRequest {
+    string filename = 1;
+}
+
+message GetFileInfoResponse {
+    bool found = 1;
+    FileInfo file_info = 2;
+}
+
+message AllocateChunksRequest {
+    string file_id = 1;
+    int32 chunk_count = 2;
+    bool enable_erasure_coding = 3;
+}
+
+message AllocateChunksResponse {
+    bool success = 1;
+    string message = 2;
+    repeated ChunkInfo allocated_chunks = 3;
+}
+
+message GetChunkLocationsRequest {
+    repeated string chunk_ids = 1;
+}
+
+message GetChunkLocationsResponse {
+    repeated ChunkInfo chunk_locations = 1;
+}
+
+message CompleteUploadRequest {
+    string file_id = 1;
+    repeated string uploaded_chunk_ids = 2;
+}
+
+message CompleteUploadResponse {
+    bool success = 1;
+    string message = 2;
+}
+
+// Chunk management messages
+message RegisterChunkServerRequest {
+    string server_id = 1;
+    string address = 2;
+    int32 port = 3;
+    int64 total_space = 4;
+}
+
+message RegisterChunkServerResponse {
+    bool success = 1;
+    string message = 2;
+}
+
+message HeartbeatRequest {
+    string server_id = 1;
+    int64 free_space = 2;
+    int32 chunk_count = 3;
+    double cpu_usage = 4;
+    double memory_usage = 5;
+    repeated string stored_chunks = 6;
+}
+
+message HeartbeatResponse {
+    bool success = 1;
+    repeated string chunks_to_delete = 2;
+    repeated ReplicationTask replication_tasks = 3;
+}
+
+message ReplicationTask {
+    string chunk_id = 1;
+    string source_server = 2;
+    string target_server = 3;
+    bool is_urgent = 4;
+}
+
+message ReplicateChunkRequest {
+    string chunk_id = 1;
+    string source_server = 2;
+    string target_server = 3;
+}
+
+message ReplicateChunkResponse {
+    bool success = 1;
+    string message = 2;
+}
+
+message DeleteChunkRequest {
+    string chunk_id = 1;
+}
+
+message DeleteChunkResponse {
+    bool success = 1;
+    string message = 2;
+}
+
+message ChunkCorruptionRequest {
+    string server_id = 1;
+    string chunk_id = 2;
+    string error_details = 3;
+}
+
+message ChunkCorruptionResponse {
+    bool acknowledged = 1;
+}
+
+// Chunk storage messages
+message WriteChunkRequest {
+    string chunk_id = 1;
+    bytes data = 2;
+    string checksum = 3;
+    bool is_encrypted = 4;
+    bool is_erasure_coded = 5;
+}
+
+message WriteChunkResponse {
+    bool success = 1;
+    string message = 2;
+    string stored_checksum = 3;
+}
+
+message ReadChunkRequest {
+    string chunk_id = 1;
+    bool verify_integrity = 2;
+}
+
+message ReadChunkResponse {
+    bool success = 1;
+    string message = 2;
+    bytes data = 3;
+    string checksum = 4;
+}
+
+message CheckIntegrityRequest {
+    string chunk_id = 1;
+}
+
+message CheckIntegrityResponse {
+    bool is_valid = 1;
+    string checksum = 2;
+}
+
+message CopyChunkRequest {
+    string chunk_id = 1;
+    string source_server = 2;
+}
+
+message CopyChunkResponse {
+    bool success = 1;
+    string message = 2;
+}

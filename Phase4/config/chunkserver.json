@@ -1,0 +1,36 @@
+{
+  "server": {
+    "port": 60051,
+    "master_address": "master:50051",
+    "server_id": "chunk-server-1",
+    "data_directory": "/app/data",
+    "log_level": "INFO"
+  },
+  "storage": {
+    "max_disk_usage_percent": 90,
+    "chunk_verification_enabled": true,
+    "garbage_collection_enabled": true,
+    "garbage_collection_interval_hours": 24
+  },
+  "heartbeat": {
+    "interval_seconds": 30,
+    "retry_attempts": 3,
+    "retry_delay_seconds": 5
+  },
+  "replication": {
+    "max_concurrent_replications": 5,
+    "replication_timeout_seconds": 300
+  },
+  "performance": {
+    "io_threads": 4,
+    "max_concurrent_reads": 50,
+    "max_concurrent_writes": 20,
+    "read_buffer_size_kb": 64,
+    "write_buffer_size_kb": 64
+  },
+  "monitoring": {
+    "metrics_enabled": true,
+    "health_check_enabled": true,
+    "disk_usage_alert_percent": 85
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "server": {
+    "port": 50051,
+    "web_port": 8080,
+    "data_directory": "/app/data",
+    "log_level": "INFO"
+  },
+  "replication": {
+    "default_replication_factor": 3,
+    "min_replication_factor": 2,
+    "max_replication_factor": 5
+  },
+  "chunk_allocation": {
+    "strategy": "LEAST_LOADED",
+    "max_chunks_per_server": 10000,
+    "rebalancing_enabled": true,
+    "rebalancing_interval_seconds": 300
+  },
+  "heartbeat": {
+    "interval_seconds": 30,
+    "timeout_seconds": 90,
+    "max_missed_heartbeats": 3
+  },
+  "erasure_coding": {
+    "enabled": true,
+    "data_blocks": 4,
+    "parity_blocks": 2,
+    "threshold_size_mb": 10
+  },
+  "encryption": {
+    "enabled": true,
+    "algorithm": "AES-256-GCM",
+    "key_rotation_days": 90
+  },
+  "performance": {
+    "chunk_size_mb": 64,
+    "max_concurrent_operations": 100,
+    "cache_size_mb": 512
+  },
+  "monitoring": {
+    "metrics_enabled": true,
+    "metrics_port": 9091,
+    "health_check_enabled": true
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "client": {
+    "master_address": "master:50051",
+    "cache_directory": "/app/data/cache",
+    "downloads_directory": "/app/downloads",
+    "uploads_directory": "/app/uploads",
+    "log_level": "INFO"
+  },
+  "performance": {
+    "max_concurrent_uploads": 5,
+    "max_concurrent_downloads": 10,
+    "chunk_size_mb": 64,
+    "retry_attempts": 3,
+    "retry_delay_seconds": 2
+  },
+  "cache": {
+    "enabled": true,
+    "max_size_mb": 256,
+    "eviction_policy": "LRU",
+    "cache_timeout_seconds": 300
+  },
+  "encryption": {
+    "default_enabled": true,
+    "password_prompt": true,
+    "key_cache_timeout_seconds": 3600
+  },
+  "erasure_coding": {
+    "default_enabled": false,
+    "threshold_size_mb": 10
+  },
+  "ui": {
+    "progress_bars": true,
+    "colors": true,
+    "auto_refresh_interval_seconds": 5
+  }
+}

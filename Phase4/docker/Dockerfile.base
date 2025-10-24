@@ -1,0 +1,35 @@
+# Base Dockerfile for DFS
+FROM ubuntu:22.04
+
+# Install dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    cmake \
+    pkg-config \
+    libssl-dev \
+    libprotobuf-dev \
+    protobuf-compiler \
+    libgrpc++-dev \
+    libgrpc-dev \
+    protobuf-compiler-grpc \
+    libjsoncpp-dev \
+    netcat \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set working directory
+WORKDIR /app
+
+# Copy source code
+COPY . .
+
+# Create necessary directories
+RUN mkdir -p /app/data /app/config /app/uploads /app/downloads
+
+# Build the project
+RUN mkdir -p build && cd build && \
+    cmake .. && \
+    make -j$(nproc)
+
+# Set environment variables
+ENV LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH

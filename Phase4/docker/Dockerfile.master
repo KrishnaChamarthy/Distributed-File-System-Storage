@@ -1,0 +1,65 @@
+# Master Server Dockerfile
+FROM ubuntu:22.04 as base
+
+# Install dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    cmake \
+    pkg-config \
+    libssl-dev \
+    libprotobuf-dev \
+    protobuf-compiler \
+    libgrpc++-dev \
+    libgrpc-dev \
+    protobuf-compiler-grpc \
+    libjsoncpp-dev \
+    netcat \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set working directory
+WORKDIR /app
+
+# Copy source code
+COPY . .
+
+# Build the project
+RUN mkdir -p build && cd build && \
+    cmake .. && \
+    make -j$(nproc)
+
+# Runtime stage
+FROM ubuntu:22.04
+
+# Install runtime dependencies
+RUN apt-get update && apt-get install -y \
+    libssl-dev \
+    libprotobuf-dev \
+    libgrpc++-dev \
+    libjsoncpp-dev \
+    netcat-openbsd \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Copy built binaries and configuration
+COPY --from=base /app/build/master_server /app/bin/master_server
+COPY --from=base /app/build/web_server /app/bin/web_server
+COPY --from=base /app/build/dfs_cli /app/bin/dfs_cli
+
+# Copy default configuration
+COPY config/ /app/config/
+
+# Create data directory
+RUN mkdir -p /app/data
+
+# Expose ports
+EXPOSE 50051 8080
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:8080/ || exit 1
+
+# Start master server and web dashboard
+CMD ["/bin/bash", "-c", "/app/bin/master_server & /app/bin/web_server 8080 & wait"]

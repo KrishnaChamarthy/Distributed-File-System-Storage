@@ -1,0 +1,182 @@
+version: '3.8'
+
+services:
+  master:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.master
+    ports:
+      - "50051:50051"    # gRPC port
+      - "8080:8080"      # Web dashboard port
+    volumes:
+      - master_data:/app/data
+      - ./config:/app/config
+    environment:
+      - DFS_ROLE=master
+      - DFS_PORT=50051
+      - DFS_WEB_PORT=8080
+      - DFS_CONFIG_FILE=/app/config/master.json
+    networks:
+      - dfs_network
+    healthcheck:
+      test: ["CMD", "./bin/dfs_cli", "status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  chunkserver1:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.chunkserver
+    ports:
+      - "60051:60051"
+    volumes:
+      - chunk_data1:/app/data
+      - ./config:/app/config
+    environment:
+      - DFS_ROLE=chunkserver
+      - DFS_PORT=60051
+      - DFS_MASTER_ADDRESS=master:50051
+      - DFS_SERVER_ID=chunk-server-1
+      - DFS_CONFIG_FILE=/app/config/chunkserver.json
+      - DFS_DATA_DIR=/app/data
+    depends_on:
+      - master
+    networks:
+      - dfs_network
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "60051"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  chunkserver2:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.chunkserver
+    ports:
+      - "60052:60051"
+    volumes:
+      - chunk_data2:/app/data
+      - ./config:/app/config
+    environment:
+      - DFS_ROLE=chunkserver
+      - DFS_PORT=60051
+      - DFS_MASTER_ADDRESS=master:50051
+      - DFS_SERVER_ID=chunk-server-2
+      - DFS_CONFIG_FILE=/app/config/chunkserver.json
+      - DFS_DATA_DIR=/app/data
+    depends_on:
+      - master
+    networks:
+      - dfs_network
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "60051"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  chunkserver3:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.chunkserver
+    ports:
+      - "60053:60051"
+    volumes:
+      - chunk_data3:/app/data
+      - ./config:/app/config
+    environment:
+      - DFS_ROLE=chunkserver
+      - DFS_PORT=60051
+      - DFS_MASTER_ADDRESS=master:50051
+      - DFS_SERVER_ID=chunk-server-3
+      - DFS_CONFIG_FILE=/app/config/chunkserver.json
+      - DFS_DATA_DIR=/app/data
+    depends_on:
+      - master
+    networks:
+      - dfs_network
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "60051"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  client:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.client
+    volumes:
+      - client_data:/app/data
+      - ./uploads:/app/uploads
+      - ./downloads:/app/downloads
+      - ./config:/app/config
+    environment:
+      - DFS_ROLE=client
+      - DFS_MASTER_ADDRESS=master:50051
+      - DFS_CONFIG_FILE=/app/config/client.json
+    depends_on:
+      - master
+      - chunkserver1
+      - chunkserver2
+      - chunkserver3
+    networks:
+      - dfs_network
+    stdin_open: true
+    tty: true
+
+  # Load balancer for multiple clients (optional)
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./docker/nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - master
+    networks:
+      - dfs_network
+
+  # Monitoring (optional)
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./docker/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+    networks:
+      - dfs_network
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./docker/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./docker/grafana/datasources:/etc/grafana/provisioning/datasources
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+      - prometheus
+    networks:
+      - dfs_network
+
+networks:
+  dfs_network:
+    driver: bridge
+
+volumes:
+  master_data:
+  chunk_data1:
+  chunk_data2:
+  chunk_data3:
+  client_data:
+  prometheus_data:
+  grafana_data:
